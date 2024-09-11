@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <!--<script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>-->
+    <script src="https://code.highcharts.com/modules/boost.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+
+    <div class="search-container">
+        <p>Stock Search</p>
+        <form onsubmit="searchAPI(); return false">
+        <div class="search-bar">
+            <button id="searchButton">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#a5a5a8" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path></svg>
+            </button>
+            <input type="text" id="searchInput" placeholder="Enter Stock Ticker Symbol" required>
+            <button id="clearButton" onclick="clearSearch()">
+                <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times" class="svg-inline--fa fa-times fa-w-11" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512"><path fill="#a5a5a8" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path></svg>
+            </button>
+        </div></form>
+    </div>
+
+    <div id="warning">
+        <p id="warningText">Error: No record has been found, please enter a valid symbol</p>
+    </div>
+
+    <div id="tab-container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('tab1')">Company</button>
+            <button class="tab-btn" onclick="openTab('tab2')">Stock Summary</button>
+            <button class="tab-btn" onclick="openTab('tab3')">Charts</button>
+            <button class="tab-btn" onclick="openTab('tab4')">Latest News</button>
+        </div>
+
+        <div class="tab-content" id="tab1">
+            <img id="resultImage" src="">
+            <table id="companyTable">
+                <tbody>
+                    <tr>
+                        <td class="headline">Company Name</td>
+                        <td id="companyName"></td>
+                    </tr>
+                    <tr>
+                        <td class="headline">Stock Ticker Symbol</td>
+                        <td id="stockTickerSymbol"></td>
+                    </tr>
+                    <tr>
+                        <td class="headline">Stock Exchange Code</td>
+                        <td id="stockExchangeCode"></td>
+                    </tr>
+                    <tr>
+                        <td class="headline">Company Start Date</td>
+                        <td id="companyStartDate"></td>
+                    </tr>
+                    <tr>
+                        <td class="headline">Category</td>
+                        <td id="category"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="tab2" style="display: none;">
+            <table id="summaryTable">
+                <tr>
+                    <td class="headline">Stock Ticker Symbol</td>
+                    <td id="stockTickerSymbol2"></td>
+                </tr>
+                <tr>
+                    <td class="headline">Trading Day</td>
+                    <td id="tradingday"></td>
+                </tr>
+                <tr>
+                    <td class="headline">Previous closing Price</td>
+                    <td id="pcp"></td>
+                </tr>
+                <tr>
+                    <td class="headline">Opening Price</td>
+                    <td id="openingp"></td>
+                </tr>
+                <tr>
+                    <td class="headline">High Price</td>
+                    <td id="highp"></td>
+                </tr>
+                <tr>
+                    <td class="headline">Low Price</td>
+                    <td id="lowp"></td>
+                </tr>
+                <tr>
+                    <td class="headline">Change</td>
+                    <td class="change">
+                        <p id="ch"></p>
+                        <img id="changeImg" src="" alt="cI">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="headline">Change Percent</td>
+                    <td class="change">
+                        <p id="ch1"></p>
+                        <img id="changeImg1" src="" alt="cI">
+                    </td>
+                </tr>
+            </table>
+            <div id="recommendation_data">
+                <p id="rec_first">Strong Sell</p>
+                <div id="rec1"></div>
+                <div id="rec2"></div>
+                <div id="rec3"></div>
+                <div id="rec4"></div>
+                <div id="rec5"></div>
+                <p id="rec_last">Strong Buy</p>
+            </div>
+            <p>Recommendations</p>
+        </div>
+
+        <div class="tab-content" id="tab3" style="display: none;">
+            <div id="container">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab4" style="display: none;">
+            <div class="news_data">
+                <div class="news_image"></div>
+                <div class="news_content">
+                    <div class="news_headline"></div>
+                    <div class="news_date"></div>
+                    <div class="news_source"></div>
+                </div>
+            </div>
+            <div class="news_data">
+                <div class="news_image">
+                    <img src="" alt="news_image">
+                </div>
+                <div class="news_content">
+                    <div class="news_headline"></div>
+                    <div class="news_date"></div>
+                    <div class="news_source"></div>
+                </div>
+            </div>
+            <div class="news_data">
+                <div class="news_image">
+                    <img src="" alt="news_image">
+                </div>
+                <div class="news_content">
+                    <div class="news_headline"></div>
+                    <div class="news_date"></div>
+                    <div class="news_source"></div>
+                </div>
+            </div>
+            <div class="news_data">
+                <div class="news_image">
+                    <img src="" alt="news_image">
+                </div>
+                <div class="news_content">
+                    <div class="news_headline"></div>
+                    <div class="news_date"></div>
+                    <div class="news_source"></div>
+                </div>
+            </div>
+            <div class="news_data">
+                <div class="news_image">
+                    <img src="" alt="news_image">
+                </div>
+                <div class="news_content">
+                    <div class="news_headline"></div>
+                    <div class="news_date"></div>
+                    <div class="news_source"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
